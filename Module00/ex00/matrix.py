@@ -1,194 +1,197 @@
 from dataclasses import dataclass, field
 from numbers import Number
-import logging
-import sys
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] \
-        in %(funcName)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-logger = logging.getLogger(__name__)
 
 
 @dataclass
 class Matrix:
     data: list = field(default_factory=list)
-    shape: tuple((int, int)) = field(default_factory=tuple)
+    shape: tuple = field(default_factory=tuple)
 
     def __init__(self, values):
-        try:
-            if isinstance(values, list):
-                if not all(isinstance(x, list) for x in values) or not all(
-                    isinstance(y, Number) for x in values for y in x
-                ):
-                    raise Exception("Matrix invalid list type")
-                if len(values) > 1:
-                    for row in values:
-                        if len(row) != len(values[0]):
-                            raise Exception("Matrix invalid list size")
-                self.data = values
-                logger.debug("Matrix list")
-            elif isinstance(values, tuple):
-                if (
-                    not all(isinstance(x, int) for x in values)
-                    or type(values[0]) != type(values[1])
-                    or values[0] >= values[1]
-                    or len(values) != 2
-                ):
-                    raise Exception("Matrix invalid tuple range")
-                logger.debug("Matrix tuple")
-                self.data = []
-                for i in range(values[0]):
-                    self.data.append([])
-                    for _ in range(values[1]):
-                        self.data[i].append(0.0)
-            else:
-                raise Exception("Matrix invalid type")
+        if isinstance(values, list):
+            if not all(isinstance(x, list) for x in values) or not all(
+                isinstance(y, Number) for x in values for y in x
+            ):
+                raise ValueError("Matrix invalid list type")
+            if len(values) > 1:
+                for row in values:
+                    if len(row) != len(values[0]):
+                        raise ValueError("Matrix invalid list size")
+            self.data = values
             self.shape = (len(self.data), len(self.data[0]))
-            logger.debug("Matrix success")
-            logger.debug(f"Matrix shape: {self.shape}")
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        elif isinstance(values, tuple):
+            if len(values) != 2 or not all(isinstance(x, int) for x in values):
+                raise ValueError("Matrix invalid tuple")
+            self.shape = values
+            self.data = [
+                [0.0 for _ in range(self.shape[1])] for _ in range(self.shape[0])
+            ]
+        else:
+            raise ValueError("Matrix invalid type")
 
     def __add__(self, other):
-        try:
-            if not isinstance(other, Matrix):
-                raise Exception("Matrix invalid type")
-            if self.shape != other.shape:
-                raise Exception("Matrix invalid shape")
-            result = Matrix(self.shape)
-            for i in range(self.shape[0]):
-                for j in range(self.shape[1]):
-                    result.data[i][j] = self.data[i][j] + other.data[i][j]
-            return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        if not isinstance(other, Matrix) or self.shape != other.shape:
+            raise ValueError("Matrix invalid type or shape")
+        result = Matrix(self.shape)
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                result.data[i][j] = self.data[i][j] + other.data[i][j]
+        return result
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __sub__(self, other):
-        try:
-            if not isinstance(other, Matrix):
-                raise Exception("Matrix invalid type")
-            if self.shape != other.shape:
-                raise Exception("Matrix invalid shape")
-            result = Matrix(self.shape)
-            for i in range(self.shape[0]):
-                for j in range(self.shape[1]):
-                    result.data[i][j] = self.data[i][j] - other.data[i][j]
-            return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        if not isinstance(other, Matrix) or self.shape != other.shape:
+            raise ValueError("Matrix invalid type or shape")
+        result = Matrix(self.shape)
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                result.data[i][j] = self.data[i][j] - other.data[i][j]
+        return result
 
     def __rsub__(self, other):
-        try:
-            if not isinstance(other, Matrix):
-                raise Exception("Matrix invalid type")
-            if self.shape != other.shape:
-                raise Exception("Matrix invalid shape")
-            result = Matrix(self.shape)
-            for i in range(self.shape[0]):
-                for j in range(self.shape[1]):
-                    result.data[i][j] = other.data[i][j] - self.data[i][j]
-            return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        return other.__sub__(self)
 
     def __truediv__(self, scalar: Number):
-        try:
-            if not isinstance(scalar, Number):
-                raise Exception("Matrix invalid type")
-            result = Matrix(self.shape)
-            for i in range(self.shape[0]):
-                for j in range(self.shape[1]):
-                    result.data[i][j] = self.data[i][j] / scalar
-            return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        if not isinstance(scalar, Number):
+            raise ValueError("Matrix invalid type")
+        result = Matrix(self.shape)
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                result.data[i][j] = self.data[i][j] / scalar
+        return result
 
     def __rtruediv__(self, scalar: Number):
-        try:
-            if not isinstance(scalar, Number):
-                raise Exception("Matrix invalid type")
+        return self.__truediv__(1 / scalar)
+
+    def __mul__(self, other):
+        if isinstance(other, Number):
             result = Matrix(self.shape)
             for i in range(self.shape[0]):
                 for j in range(self.shape[1]):
-                    result.data[i][j] = scalar / self.data[i][j]
+                    result.data[i][j] = self.data[i][j] * other
             return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
-
-    def __mul__(self, other):
-        try:
-            if isinstance(other, Number):
-                result = Matrix(self.shape)
-                for i in range(self.shape[0]):
-                    for j in range(self.shape[1]):
-                        result.data[i][j] = self.data[i][j] * other
-                return result
-            elif isinstance(other, Vector):
-                if self.shape[1] != other.shape[0]:
-                    raise Exception("Matrix invalid shape")
-                result = Vector((self.shape[0], 1))
-                for i in range(self.shape[0]):
-                    for j in range(self.shape[1]):
-                        result.data[i][0] += self.data[i][j] * other.data[j][0]
-                return result
-            elif isinstance(other, Matrix):
-                if self.shape[1] != other.shape[0]:
-                    raise Exception("Matrix invalid shape")
-                result = Matrix((self.shape[0], other.shape[1]))
-                for i in range(self.shape[0]):
-                    for j in range(other.shape[1]):
-                        for k in range(self.shape[1]):
-                            result.data[i][j] += self.data[i][k] * other.data[k][j]
-                return result
-            else:
-                raise Exception("Matrix invalid type")
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
-
-    def T(self):
-        try:
-            result = Matrix((self.shape[1], self.shape[0]))
+        elif isinstance(other, Vector):
+            if self.shape[1] != other.shape[0]:
+                raise ValueError("Matrix invalid shape")
+            result = Vector([[0] for _ in range(self.shape[0])])
             for i in range(self.shape[0]):
                 for j in range(self.shape[1]):
-                    result.data[j][i] = self.data[i][j]
+                    result.data[i][0] += self.data[i][j] * other.data[j][0]
             return result
-        except Exception as e:
-            logger.error(type(e).__name__ + ": " + str(e))
-            return
+        elif isinstance(other, Matrix):
+            if self.shape[1] != other.shape[0]:
+                raise ValueError("Matrix invalid shape")
+            result = Matrix((self.shape[0], other.shape[1]))
+            for i in range(self.shape[0]):
+                for j in range(other.shape[1]):
+                    for k in range(self.shape[1]):
+                        result.data[i][j] += self.data[i][k] * other.data[k][j]
+            return result
+        else:
+            raise ValueError("Matrix invalid type")
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
+    def T(self):
+        result = Matrix((self.shape[1], self.shape[0]))
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                result.data[j][i] = self.data[i][j]
+        return result
+
     def __str__(self):
-        return f"Matrix: {str(self.data)}"
+        return f"{type(self)}: {str(self.data)}"
 
     def __repr__(self):
-        return f"Matrix: {str(self.data)}"
+        return f"{type(self)}: {str(self.data)}"
 
 
-@dataclass
 class Vector(Matrix):
-    # create a Vector class that inherit from Matrix. At initialization, you  must check that a column or a row vector is passed as the data argument. If not, you must send an error message
+    def __init__(self, values):
+        if not isinstance(values, list) or not (
+            len(values) == 1 or all(len(row) == 1 for row in values)
+        ):
+            raise ValueError("Vector invalid type or shape")
+        super().__init__(values)
+
+    def dot(self, v):
+        if not isinstance(v, Vector) or self.shape[1] != v.shape[0]:
+            raise ValueError("Vector invalid type or shape")
+        result = 0
+        for i in range(self.shape[0]):
+            result += self.data[i][0] * v.data[i][0]
+        return result
+
+    def __add__(self, other):
+        result = super().__add__(other)
+        return Vector(result.data)
+
+    def __sub__(self, other):
+        result = super().__sub__(other)
+        return Vector(result.data)
+
+    def __mul__(self, other):
+        result = super().__mul__(other)
+        if isinstance(result, Matrix):
+            return Vector(result.data)
+        return result
+
+    def __truediv__(self, scalar: Number):
+        result = super().__truediv__(scalar)
+        return Vector(result.data)
+
+    def __rtruediv__(self, scalar: Number):
+        result = super().__rtruediv__(scalar)
+        return Vector(result.data)
+
+    def __str__(self):
+        return f"{type(self)}: {str(self.data)}"
+
+    def __repr__(self):
+        return f"{type(self)}: {str(self.data)}"
 
 
 if __name__ == "__main__":
-    m = Matrix([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]])
-    m2 = Matrix((3, 5))
-    print(m.data)
-    print(m.shape)
-    print(m2.data)
-    print(m2.shape)
-    sys.exit(0)
+    m1 = Matrix([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]])
+    print(m1.shape)
+    # Output:
+    print(f"Expected: (3, 2)")
+    print(m1.T())
+    # Output:
+    print(f"Expected :Matrix([[0.0, 2.0, 4.0], [1.0, 3.0, 5.0]])")
+    print(m1.T().shape)
+    # Output:
+    print(f"Expected: (2, 3)")
+
+    m1 = Matrix([[0.0, 2.0, 4.0], [1.0, 3.0, 5.0]])
+    print(m1.shape)
+    # Output:
+    print(f"Expected: (2, 3)")
+    print(m1.T())
+    # Output:
+    print(f"Expected: Matrix([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]])")
+    print(m1.T().shape)
+    # Output:
+    print(f"Expected: (3, 2)")
+
+    m1 = Matrix([[0.0, 1.0, 2.0, 3.0], [0.0, 2.0, 4.0, 6.0]])
+    m2 = Matrix([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0], [6.0, 7.0]])
+    print(m1 * m2)
+    # Output:
+    print(f"Expected: Matrix([[28.0, 34.0], [56.0, 68.0]])")
+
+    m1 = Matrix([[0.0, 1.0, 2.0], [0.0, 2.0, 4.0]])
+    v1 = Vector([[1], [2], [3]])
+    print(m1 * v1)
+    # Output:
+    print(f"Expected: Vector([[8], [16]])")
+
+    v1 = Vector([[1], [2], [3]])
+    v2 = Vector([[2], [4], [8]])
+    print(v1 + v2)
+    # Output:    # Or: Vector([[8], [16]
+
+    print(f"Expected: Vector([[3], [6], [11]])")

@@ -21,7 +21,7 @@ def loss_(y, y_hat):
         return None
     if y.shape != y_hat.shape:
         return None
-    return np.dot((y_hat - y).T, (y_hat - y)) / y.shape[0]
+    return (np.dot((y_hat - y).T, (y_hat - y)) / y.shape[0]).item()
 
 
 def plot_with_loss(x, y, theta):
@@ -43,7 +43,7 @@ def plot_with_loss(x, y, theta):
     y_hat = theta[0] + theta[1] * x
     plt.scatter(x, y, color="blue")
     plt.plot(x, y_hat, color="red")
-    plt.title(f"Loss: {loss_(y, y_hat)}")
+    plt.title(f"Cost: {loss_(y, y_hat):.6f}")
     for i in range(x.shape[0]):
         plt.plot([x[i], x[i]], [y[i], y_hat[i]], color="red", linestyle="--")
     plt.show()

@@ -85,7 +85,7 @@ def loss_(y, y_hat):
         return None
     if y.shape != y_hat.shape:
         return None
-    return np.sum(loss_elem_(y, y_hat)) / (2 * y.shape[0])
+    return (np.sum(loss_elem_(y, y_hat)) / (2 * y.shape[0])).item()
 
 
 if __name__ == "__main__":

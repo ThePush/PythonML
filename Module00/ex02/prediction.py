@@ -27,6 +27,7 @@ if __name__ == "__main__":
         f"Test: theta1=np.array([5, 0])\nExpected Ouput: array([5., 5., 5., 5., 5.])\nActual Output: {simple_predict(x, theta1)}\n"
     )
     # Do you understand why y_hat contains only 5’s here?
+    # 0x+5 = 5
 
     # Example 2:
     theta2 = np.array([0, 1])
@@ -34,6 +35,7 @@ if __name__ == "__main__":
         f"Test: theta2=np.array([0, 1])\nExpected Ouput: array([1., 2., 3., 4., 5.])\nActual Output: {simple_predict(x, theta2)}\n"
     )
     # Do you understand why y_hat == x here?
+    # 1x+0 = x
 
     # Example 3:
     theta3 = np.array([5, 3])

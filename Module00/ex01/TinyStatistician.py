@@ -55,7 +55,7 @@ class TinyStatistician:
         if len(x) == 0:
             return None
         mean = self.mean(x)
-        return sum([(i - mean) ** 2 for i in x]) / len(x)
+        return sum([(i - mean) ** 2 for i in x]) / (len(x)-1)
 
     def std(self, x):
         """Computes the standard deviation of a given non-empty list or array x,

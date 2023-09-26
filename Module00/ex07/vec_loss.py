@@ -20,7 +20,7 @@ def loss_(y, y_hat):
         return None
     if y.shape != y_hat.shape:
         return None
-    return np.dot((y_hat - y).T, (y_hat - y)) / (2 * y.shape[0])
+    return (np.dot((y_hat - y).T, (y_hat - y)) / (2 * y.shape[0])).item()
 
 
 if __name__ == "__main__":
