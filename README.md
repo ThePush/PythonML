@@ -11,7 +11,7 @@
 
 -   Linear Algebra
 
--   Linear Regression
+-   Univariate and Multivariate Linear Regression
 
 -   Loss Functions (MSE, RMSE, MAE, R2score)
 
