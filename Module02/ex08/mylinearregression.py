@@ -2,10 +2,10 @@ import numpy as np
 
 
 class MyLinearRegression:
-    def __init__(self, thetas, alpha=0.001, max_iter=1000):
+    def __init__(self, thetas, alpha=0.0001, max_iter=1000):
         self.alpha = alpha
         self.max_iter = max_iter
-        self.thetas = thetas.astype("float64")
+        self.thetas = thetas.astype("float64").reshape(-1, 1)
 
     def gradient(self, x, y, theta):
         if x.size == 0 or y.size == 0 or theta.size == 0:
@@ -71,68 +71,7 @@ class MyLinearRegression:
             return None
         return np.sum(self.loss_elem_(y, y_hat)) / (2 * y.shape[0])
 
-    def mse_(y, y_hat):
+    def mse_(self, y, y_hat):
         if y.shape != y_hat.shape:
             return None
         return np.mean((y_hat - y) ** 2)
-
-
-if __name__ == "__main__":
-    X = np.array(
-        [[1.0, 1.0, 2.0, 3.0], [5.0, 8.0, 13.0, 21.0], [34.0, 55.0, 89.0, 144.0]]
-    )
-    Y = np.array([[23.0], [48.0], [218.0]])
-    mylr = MyLinearRegression(np.array([[1.0], [1.0], [1.0], [1.0], [1.0]]))
-
-    # Example 0:
-    y_hat = mylr.predict_(X)
-    print(y_hat)
-    # Output:
-    # array([[  8.],
-    #        [ 48.],
-    #        [323.]])
-
-    # Example 1:
-    print(mylr.loss_elem_(Y, y_hat))
-    # Output:
-    # array([[  225.],
-    #        [    0.],
-    #        [11025.]])
-
-    # Example 2:
-    print(mylr.loss_(Y, y_hat))
-    # Output:
-    # 1875.0
-
-    # Example 3:
-    mylr.alpha = 1.6e-4
-    mylr.max_iter = 200000
-    mylr.thetas = np.array([[1.0], [1.0], [1.0], [1.0], [1.0]])
-    mylr.thetas = mylr.fit_(X, Y)
-    print(mylr.thetas)
-    # Output:
-    # array([[18.188..],
-    #        [ 2.767..],
-    #        [-0.374..],
-    #        [ 1.392..],
-    #        [ 0.017..]])
-
-    # Example 4:
-    y_hat = mylr.predict_(X)
-    print(y_hat)
-    # Output:
-    # array([[ 23.417..],
-    #        [ 47.489..],
-    #        [218.065...]])
-
-    # Example 5:
-    print(mylr.loss_elem_(Y, y_hat))
-    # Output:
-    # array([[0.174..],
-    #        [0.260..],
-    #        [0.004..]])
-
-    # Example 6:
-    print(mylr.loss_(Y, y_hat))
-    # Output:
-    # 0.0732..
