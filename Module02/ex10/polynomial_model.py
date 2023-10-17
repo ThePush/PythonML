@@ -25,34 +25,11 @@ def add_polynomial_features(x, power):
         return None
 
     m = x.shape[0]
-    polynomial_features = np.zeros((m, power))
+    n = x.shape[1]
+    polynomial_features = np.zeros((m, n * power))
 
-    for i in range(1, power + 1):
-        polynomial_features[:, i - 1] = x.ravel() ** i
+    for i in range(n):
+        for j in range(1, power + 1):
+            polynomial_features[:, i * power + j - 1] = x[:, i] ** j
 
     return polynomial_features
-
-
-if __name__ == "__main__":
-    # Examples
-    x = np.arange(1, 6).reshape(-1, 1)
-
-    # Example 0
-    result_0 = add_polynomial_features(x, 3)
-    print(result_0.astype(int))
-    # Output:
-    #array([[ 1, 1, 1],
-    #[ 2, 4, 8],
-    #[ 3, 9, 27],
-    #[ 4, 16, 64],
-    #[ 5, 25, 125]])
-
-    # Example 1
-    result_1 = add_polynomial_features(x, 6)
-    print(result_1.astype(int))
-    # Output:
-    #array([[ 1, 1, 1, 1, 1, 1],
-    #[ 2, 4, 8, 16, 32, 64],
-    #[ 3, 9, 27, 81, 243, 729],
-    #[ 4, 16, 64, 256, 1024, 4096],
-    #[ 5, 25, 125, 625, 3125, 15625]])

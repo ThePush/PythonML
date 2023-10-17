@@ -54,13 +54,13 @@ if __name__ == "__main__":
         ]
     )
     y = np.array([2, 14, -13, 5, 12, 4, -19]).reshape((-1, 1))
-    theta1 = np.array([3, 0.5, -6, 5]).reshape((-1, 1))
+    theta1 = np.array([0, 3, 0.5, -6]).reshape((-1, 1))
     print(gradient(x, y, theta1))
     # Output:
-    # array([[  47.64285714],
-    #        [ 300.5       ],
-    #        [-559.35714286],
-    #        [ 559.85714286]])
+    # array([[-33.71428571],
+    #       [-37.35714286],
+    #       [183.14285714],
+    #       [-393.0]])
     theta2 = np.array([0, 0, 0, 0]).reshape((-1, 1))
     print(gradient(x, y, theta2))
     # Output:
@@ -68,3 +68,6 @@ if __name__ == "__main__":
     #        [  0.85714286],
     #        [ 23.28571429],
     #        [-26.42857143]])
+
+
+# https://github.com/42-AI/bootcamp_machine-learning/issues/225
