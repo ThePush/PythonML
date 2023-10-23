@@ -11,7 +11,7 @@ import os
 
 
 if __name__ == "__main__":
-    if not os.path.exists("models.pickle") or not os.path.exists("space_avocado.csv"):
+    if not os.path.exists("space_avocado.csv"):
         print(f"file not found")
         sys.exit(1)
 

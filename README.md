@@ -9,10 +9,19 @@
 </div>
 
 
--   Linear Algebra
+-   Linear Algebra and Calculus
 
 -   Univariate and Multivariate Linear Regression
 
--   Loss Functions (MSE, RMSE, MAE, R2score)
+-   Logistic Regression
+
+-   Loss Functions (MSE, RMSE, MAE, Cross-Entropy)
+
+-   Metrics (Accuracy, Precision, Recall, F1-score)
+
+-   Confusion Matrix
+
+-   Regularization (Ridge)
+
 
 #
